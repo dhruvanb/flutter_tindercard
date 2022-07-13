@@ -36,6 +36,8 @@ class TinderSwapCard extends StatefulWidget {
 
   final List<Alignment> _cardAligns = [];
 
+  final EdgeInsetsGeometry? _backCardPadding;
+
   @override
   _TinderSwapCardState createState() => _TinderSwapCardState();
 
@@ -50,6 +52,7 @@ class TinderSwapCard extends StatefulWidget {
   TinderSwapCard({
     required CardBuilder cardBuilder,
     required int totalNum,
+    EdgeInsetsGeometry? backCardPadding,
     AmassOrientation orientation = AmassOrientation.bottom,
     int stackNum = 3,
     int animDuration = 800,
@@ -70,6 +73,7 @@ class TinderSwapCard extends StatefulWidget {
         assert(swipeEdgeVertical > 0),
         assert(maxWidth! > minWidth! && maxHeight! > minHeight!),
         _cardBuilder = cardBuilder,
+        _backCardPadding = backCardPadding,
         _totalNum = totalNum,
         _stackNum = stackNum,
         _animDuration = animDuration,
@@ -127,11 +131,11 @@ class TinderSwapCard extends StatefulWidget {
 
 class _TinderSwapCardState extends State<TinderSwapCard>
     with TickerProviderStateMixin {
-   late Alignment frontCardAlign;
+  late Alignment frontCardAlign;
 
-   late AnimationController _animationController;
+  late AnimationController _animationController;
 
-   late int _currentFront;
+  late int _currentFront;
 
   static TriggerDirection? _trigger;
 
@@ -195,9 +199,16 @@ class _TinderSwapCardState extends State<TinderSwapCard>
                 widget._cardSizes[index + 1],
               ).value
             : widget._cardSizes[index],
-        child: widget._cardBuilder(
-          context,
-          widget._totalNum - realIndex - 1,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8.0),
+            color: const Color(0xff67676d).withOpacity(0.8),
+          ),
+          padding: widget._backCardPadding,
+          child: widget._cardBuilder(
+            context,
+            widget._totalNum - realIndex - 1,
+          ),
         ),
       ),
     );
@@ -356,6 +367,7 @@ typedef CardDragUpdateCallback = void Function(
 
 enum AmassOrientation { top, bottom, left, right }
 
+// ignore: avoid_classes_with_only_static_members
 class CardAnimation {
   static Animation<Alignment> frontCardAlign(
     AnimationController controller,
